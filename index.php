@@ -161,41 +161,6 @@
         });
 
 
-
-
-    function movingAverage(array, count) {
-        var result = [], val;
-
-        for (var i = Math.floor(count / 2), len = array.length - count / 2; i < len; i++) {
-            val = d3.mean(array.slice(i - count / 2, i + count / 2), d => d.Total);
-            result.push({"date": array[i].date, "value": val});
-        }
-
-        return result;
-    }
-    const line = d3.line()
-        .x(d => (x.bandwidth() / 2) + x(d.population)) // décalage pour centrer au milieu des barres
-        .y(d => y(d.value))
-        .curve(d3.curveMonotoneX); // Fonction de courbe permettant de l'adoucir
-
-    let mm10array = movingAverage(data, 10); // Moyenne mobile sur 10 jours
-
-    svg.append("path")
-        .datum(mm10array)
-        .attr("d", line)
-        .style("fill", "none")
-        .style("stroke", "#ffab00")
-        .style("stroke-width", 3);
-
-    let lastEntry = mm10array[mm10array.length - 1];
-    svg.append("text")
-        .attr("transform", "translate(" + x(lastEntry.population) + "," + y(lastEntry.value) + ")") // Le dernier point de la courbe
-        .attr("dx", "0.5em") // Auquel on ajoute un léger décalage sur X
-        .attr("dy", "0.5em") // et sur Y
-        .style("fill", "#ffab00")
-        .style("font-size", "0.8em")
-        .style("font-weight", "500")
-        .text("MM10");
 </script>
 </body>
 </html>
