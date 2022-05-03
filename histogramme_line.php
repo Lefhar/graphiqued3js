@@ -24,6 +24,7 @@ Unless required by applicable law or agreed to in writing, software
         body {
             font: 10px sans-serif;
         }
+
         .axis path,
         .line {
             fill: none;
@@ -34,7 +35,14 @@ Unless required by applicable law or agreed to in writing, software
 </head>
 
 <body>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+<div class="container">
+    <div class="row">
+        <div id="graphique"></div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+        crossorigin="anonymous"></script>
 <script type="text/javascript">
     let margin = {
             top: 20,
@@ -73,7 +81,9 @@ Unless required by applicable law or agreed to in writing, software
     // Generate a histogram using twenty uniformly-spaced bins.
     let dataBar = d3.layout.histogram()
         .bins(numBuckets)(actualData);
-    let yMax = d3.max(dataBar, function (d) {return d.length;});
+    let yMax = d3.max(dataBar, function (d) {
+        return d.length;
+    });
     let y = d3.scale.linear()
         .domain([0, yMax])
         .range([height, 0]);
@@ -88,17 +98,25 @@ Unless required by applicable law or agreed to in writing, software
     // normalized X Axis scaler function
     let xNormal = d3.scale.linear()
         .range([0, width])
-        .domain(d3.extent(idealData, function (d) {return d.q;}));
+        .domain(d3.extent(idealData, function (d) {
+            return d.q;
+        }));
     // normalized Y Axis scaler function
     let yNormal = d3.scale.linear()
         .range([height, 0])
-        .domain(d3.extent(idealData, function (d) {return d.p;}));
+        .domain(d3.extent(idealData, function (d) {
+            return d.p;
+        }));
     // line plot function
     let linePlot = d3.svg.line()
-        .x(function (d) {return xNormal(d.q);})
-        .y(function (d) {return yNormal(d.p);});
+        .x(function (d) {
+            return xNormal(d.q);
+        })
+        .y(function (d) {
+            return yNormal(d.p);
+        });
     // Attach to body
-    let svg = d3.select("body").append("svg")
+    let svg = d3.select("#graphique").append("svg")
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom)
         .append("g")
@@ -113,15 +131,23 @@ Unless required by applicable law or agreed to in writing, software
         });
     bar.append('rect')
         .attr('x', 1)
-        .attr('width', function (d) {return (x(d.dx) - x(0)) <= 0 ? 0 : (x(d.dx) - x(0)) - 1;})
-        .attr('height', function (d) {return height - y(d.y);})
-        .attr('fill', function () {return color(series[0]);});
+        .attr('width', function (d) {
+            return (x(d.dx) - x(0)) <= 0 ? 0 : (x(d.dx) - x(0)) - 1;
+        })
+        .attr('height', function (d) {
+            return height - y(d.y);
+        })
+        .attr('fill', function () {
+            return color(series[0]);
+        });
     bar.append('text')
         .attr('dy', '.75em')
         .attr('y', -12)
         .attr('x', (x(dataBar[0].dx) - x(0)) / 2)
         .attr('text-anchor', 'middle')
-        .text(function (d) {return formatCount(d.y);});
+        .text(function (d) {
+            return formatCount(d.y);
+        });
     // draw ideal normal distribution curve
     let lines = svg.selectAll('.series')
         .data([1]) // only plot a single line
@@ -132,8 +158,10 @@ Unless required by applicable law or agreed to in writing, software
         .datum(idealData)
         .attr('class', 'line')
         .attr('d', linePlot)
-        .style('stroke', function () {return color(series[1]);})
-        .style({ 'stroke-width': '2px', 'fill': 'none' });
+        .style('stroke', function () {
+            return color(series[1]);
+        })
+        .style({'stroke-width': '2px', 'fill': 'none'});
     // Add the X Axis
     svg.append('g')
         .attr('class', 'x axis')
@@ -143,7 +171,8 @@ Unless required by applicable law or agreed to in writing, software
     svg.append('g')
         .attr('class', 'y axis')
         .call(yAxis);
-    function getProbabilityData (normalizedData, m, v) {
+
+    function getProbabilityData(normalizedData, m, v) {
         let data = [];
         // probabily - quantile pairs
         for (let i = 0; i < normalizedData.length; i += 1) {
@@ -154,13 +183,16 @@ Unless required by applicable law or agreed to in writing, software
                     'p': p
                 };
             data.push(el);
-        };
-        data.sort(function (x, y) {return x.q - y.q;});
+        }
+        ;
+        data.sort(function (x, y) {
+            return x.q - y.q;
+        });
         return data;
     };
     // The probability density of the normal distribution
     // https://en.wikipedia.org/wiki/Normal_distribution
-    function probabilityDensityCalculation (x, mean, letiance) {
+    function probabilityDensityCalculation(x, mean, letiance) {
         let m = Math.sqrt(2 * Math.PI * letiance);
         let e = Math.exp(-Math.pow(x - mean, 2) / (2 * letiance));
         return e / m;
